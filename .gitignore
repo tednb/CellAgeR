@@ -1,2 +1,8 @@
+.Rhistory
+.RData
+.Rproj.user
+.Ruserdata
+*.tar.gz
 /doc/
 /Meta/
+/data-raw/
