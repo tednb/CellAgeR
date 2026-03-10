@@ -1,0 +1,31 @@
+Package: CellAgeR
+Title: Enhancer-Enriched Cell-Type-Specific Epigenetic Clocks
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Xiaolong", family = "Guo", email = "guoxiaolong2022@sinh.ac.cn",
+        role = c("aut", "cre"))
+Description: Provides enhancer-enriched, cell-type-specific epigenetic clock
+    models for estimating DNA methylation age from beta value matrices.
+    Includes utilities to generate DNA methylation age predictions, compute
+    age acceleration residuals when chronological age is available, and access
+    packaged example datasets and pre-trained clock coefficients for
+    reproducible analyses.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Depends: 
+    R (>= 3.5)
+Imports: 
+    stats
+Suggests: 
+    BiocStyle,
+    knitr,
+    rmarkdown,
+    ggplot2,
+    patchwork,
+    ggpubr,
+    testthat (>= 3.0.0)
+VignetteBuilder: 
+    knitr
+Config/testthat/edition: 3

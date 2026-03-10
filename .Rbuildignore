@@ -1,0 +1,10 @@
+^LICENSE\.md$
+^data-raw$
+^\.vscode$
+^doc$
+^Meta$
+^.*\.tar\.gz$
+^vignette\.html$
+^vignette\.md$
+^Walker_predictions_results\.pdf$
+^HDStriatum_NeuronClock_AgeAccel\.pdf$

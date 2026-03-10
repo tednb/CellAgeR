@@ -1,0 +1,207 @@
+---
+title: "Introduction to CellAgeR: Enhancer-Enriched Cell-Type Specific DNA Methylation Clocks"
+author: "Xiaolong Guo, Andrew E. Teschendorff"
+date: "`r Sys.Date()`"
+package: CellAgeR
+output:
+  BiocStyle::html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+vignette: >
+  %\VignetteIndexEntry{Introduction to CellAgeR: Enhancer-Enriched Cell-Type Specific DNA Methylation Clocks}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5,
+  fig.align = "center"
+)
+```
+
+## Introduction
+
+The `CellAgeR` package provides a suite of enhancer-enriched, cell-type specific DNAm clocks. Biological aging often manifests differently across distinct cell types, yet standard bulk-tissue clocks can be confounded by changes in cellular heterogeneity.
+
+By focusing on DNA methylation patterns at enhancer-enriched cell-type specific regions, `CellAgeR` enables quantification of biological age for: - **Brain**: Neurons and Oligodendrocytes - **Epithelial cells**: Skin Keratinocytes, Colon, and Lung - **Liver**: Hepatocytes (HepClockV2) - **Immune cells**: CD4+ T cells and Monocytes
+
+This vignette demonstrates how to use the core functions to predict epigenetic age and perform downstream analysis using example datasets.
+
+## Setup
+
+```{r setup, message=FALSE, warning=FALSE}
+pkg_name <- "CellAgeR"
+
+if (!exists("getClockCoefficients", mode = "function")) {
+  library(pkg_name, character.only = TRUE)
+}
+
+library(ggplot2)
+library(patchwork)
+library(ggpubr)
+
+example_dir <- system.file("extdata", package = pkg_name)
+if (!nzchar(example_dir)) {
+  example_dir <- "inst/extdata"
+}
+```
+
+## Data Preparation
+
+`CellAgeR` requires a DNA methylation beta matrix with CpGs in rows and samples in columns, plus a clock model. The package includes pre-trained models that can be retrieved with `getClockCoefficients()`.
+
+```{r data_check}
+clock_coefficients <- getClockCoefficients()
+clock_env <- list2env(clock_coefficients, parent = emptyenv())
+
+# Available clocks in the package
+ls(clock_env)
+```
+
+The packaged example datasets follow the same structure used in the tests:
+
+-   `betaMat`: methylation beta matrix
+-   `phenoDf`: sample-level phenotype table
+
+## Quick Start: Predicting Epigenetic Age
+
+In this example, we use the `Walker et al.` dataset which contains sorted Neurons (`NeuNPos`), Oligodendrocytes (`Sox10Pos`), and bulk Prefrontal Cortex (PFC) samples (`Total`).
+
+We will predict age using both the `NeuronClock` and the `OligoClock`, following the same workflow used in the validated test script.
+
+```{r quick_start, message=FALSE}
+# Load example data
+load(file.path(example_dir, "Walker.Rdata"))
+
+clocks <- list(
+  Neuron = clock_coefficients$NeuronClock,
+  Oligo = clock_coefficients$OligoClock
+)
+
+cell_types <- c(
+  "NeuNPos" = "Neuron",
+  "Sox10Pos" = "Oligo",
+  "Total" = "PFC"
+)
+
+plot_list <- list()
+
+for (clock_name in names(clocks)) {
+  for (ct_key in names(cell_types)) {
+    ct_label <- cell_types[[ct_key]]
+    idx <- which(phenoDf$CellType == ct_key)
+    p_sub <- phenoDf[idx, ]
+    b_sub <- betaMat[, idx]
+
+    res <- predictCTSAge(b_sub, clocks[[clock_name]], age = p_sub$Age)
+
+    pred_df <- res$predictions
+    real_age <- p_sub$Age
+    pred_age <- pred_df$DNAmAge
+    
+    valid <- !is.na(pred_age) & !is.na(real_age)
+    real_age <- real_age[valid]
+    pred_age <- pred_age[valid]
+    
+    if (length(real_age) > 2) {
+      pcc <- cor(real_age, pred_age, method = "pearson")
+      medae_val <- median(abs(real_age - pred_age))
+      slope <- coef(lm(pred_age ~ real_age))[2]
+
+      df_plot <- data.frame(Age = real_age, Predicted = pred_age)
+      range_val <- range(c(real_age, pred_age), na.rm = TRUE)
+      annot_str <- sprintf(
+        "PCC = %.2f\nMedAE = %.2f\nSlope = %.2f",
+        pcc,
+        medae_val,
+        slope
+      )
+
+      p <- ggplot(df_plot, aes(x = Age, y = Predicted)) +
+        geom_point(alpha = 0.6, color = "steelblue", size = 0.5) +
+        geom_abline(intercept = 0, slope = 1, color = "darkgrey", linetype = "dashed") +
+        geom_smooth(method = "lm", se = FALSE, color = "red", linewidth = 0.5) +
+        annotate(
+          "text",
+          x = -Inf,
+          y = Inf,
+          label = annot_str,
+          hjust = -0.1,
+          vjust = 1.2,
+          size = 2.47
+        ) +
+        labs(
+          title = paste0(clock_name, "Clock -> ", ct_label),
+          x = "Chronological Age",
+          y = "Predicted Age"
+        ) +
+        coord_fixed(xlim = range_val, ylim = range_val) +
+        theme_bw() +
+        theme(
+          plot.title = element_text(size = 7, face = "bold", hjust = 0.5),
+          axis.title = element_text(size = 7),
+          axis.text = element_text(size = 7)
+        )
+
+      plot_list[[paste(clock_name, ct_key, sep = "_")]] <- p
+    }
+  }
+}
+
+wrap_plots(plot_list, ncol = 3, nrow = 2)
+```
+
+## Downstream Analysis: Age Acceleration in Huntington's Disease
+
+A key application of epigenetic clocks is calculating age acceleration, defined here as the residual from regressing DNAmAge on chronological age. Using the `GSE284764` dataset, we test whether striatal neurons from Huntington's disease cases show elevated age acceleration relative to controls.
+
+```{r downstream, message=FALSE, warning=FALSE}
+# Load HD dataset
+load(file.path(example_dir, "HDStriatum.Rdata"))
+
+# Predict with NeuronClock
+res_hd <- predictCTSAge(
+  betaMatrix = betaMat,
+  clock = clock_coefficients$NeuronClock,
+  age = phenoDf$Age
+)
+
+# Prepare dataframe for analysis
+plot_df <- data.frame(
+  Group = phenoDf$GroupRaw,
+  AgeAccel = res_hd$ageAcceleration$AgeAcceleration
+)
+
+# Visualization & statistical annotation
+ggplot(plot_df, aes(x = Group, y = AgeAccel, fill = Group)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.5, size = 0.3) +
+  geom_jitter(width = 0.2, alpha = 0.7, size = 0.5) +
+  stat_compare_means(
+    method = "wilcox.test",
+    method.args = list(alternative = "less"),
+    label.x.npc = "center",
+    label.y.npc = "top",
+    size = 2.47,
+    aes(label = paste0("P = ", ..p.format..))
+  ) +
+  theme_bw() +
+  labs(title = "Neuron clock -> Striatum",
+       y = "Residuals Age Acceleration",
+       x = NULL) +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5, face = "bold", size = 7),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_fill_manual(values = c("Control" = "steelblue", "Huntington's disease" = "firebrick"))
+```
+
+## Session Info
+
+```{r sessionInfo}
+sessionInfo()
+```
