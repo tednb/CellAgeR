@@ -12,7 +12,13 @@ CpGs in rows and samples in columns.}
 
 \item{clock}{A data frame representing the epigenetic clock model. It must
 contain 'Feature' and 'Coefficient' columns. The intercept should be
-indicated by '(Intercept)' in the 'Feature' column.}
+indicated by '(Intercept)' in the 'Feature' column. If you use packaged
+models from \code{getClockCoefficients()}, valid clock names are
+\code{NeuronClock}, \code{OligoClock}, \code{sortedNeuronClock},
+\code{sortedOligoClock}, \code{Cd4tClock}, \code{MonoClock},
+\code{ColonEpiClock}, \code{KeraClock}, \code{LungEpiClock}, and
+\code{HepClock}. For example, use
+\code{clock = getClockCoefficients()$NeuronClock}.}
 
 \item{age}{A numeric vector of chronological ages for the samples. The
 order must correspond to the sample order in \code{betaMatrix}. Defaults
@@ -27,5 +33,24 @@ each sample. NULL if \code{age} is not provided.}
 \description{
 This function predicts epigenetic age based on a given DNA
 methylation beta matrix and a clock model. Optionally, if chronological
-age is provided, it calculates age acceleration residuals.
+age is provided, it calculates age acceleration residuals. When using
+packaged models from \code{getClockCoefficients()}, available clock names are
+\code{NeuronClock}, \code{OligoClock}, \code{sortedNeuronClock},
+\code{sortedOligoClock}, \code{Cd4tClock}, \code{MonoClock},
+\code{ColonEpiClock}, \code{KeraClock}, \code{LungEpiClock}, and
+\code{HepClock}.
+}
+\examples{
+clock_coefficients <- getClockCoefficients()
+example_dir <- system.file("extdata", package = "CellAgeR")
+load(file.path(example_dir, "Walker.Rdata"))
+
+res <- predictCTSAge(
+	betaMatrix = as.matrix(betaMat[, 1:3]),
+	clock = clock_coefficients$NeuronClock,
+	age = phenoDf$Age[1:3]
+)
+
+head(res$predictions)
+head(res$ageAcceleration)
 }

@@ -1,13 +1,22 @@
 #' @title Predict Epigenetic Age and Age Acceleration
 #' @description This function predicts epigenetic age based on a given DNA
 #'     methylation beta matrix and a clock model. Optionally, if chronological
-#'     age is provided, it calculates age acceleration residuals.
+#'     age is provided, it calculates age acceleration residuals. When using
+#'     packaged models from `getClockCoefficients()`, available clock names are
+#'     `NeuronClock`, `OligoClock`, `sortedNeuronClock`, `sortedOligoClock`,
+#'     `Cd4tClock`, `MonoClock`, `ColonEpiClock`, `KeraClock`,
+#'     `LungEpiClock`, and `HepClock`.
 #'
 #' @param betaMatrix A numeric matrix of beta values, with 
 #'     CpGs in rows and samples in columns.
 #' @param clock A data frame representing the epigenetic clock model. It must
 #'     contain 'Feature' and 'Coefficient' columns. The intercept should be
-#'     indicated by '(Intercept)' in the 'Feature' column.
+#'     indicated by '(Intercept)' in the 'Feature' column. If you use packaged
+#'     models from `getClockCoefficients()`, valid clock names are
+#'     `NeuronClock`, `OligoClock`, `sortedNeuronClock`,
+#'     `sortedOligoClock`, `Cd4tClock`, `MonoClock`, `ColonEpiClock`,
+#'     `KeraClock`, `LungEpiClock`, and `HepClock`. For example, use
+#'     `clock = getClockCoefficients()$NeuronClock`.
 #' @param age A numeric vector of chronological ages for the samples. The
 #'     order must correspond to the sample order in `betaMatrix`. Defaults
 #'     to NULL.
@@ -16,6 +25,20 @@
 #' \item{predictions}{A data frame with the predicted DNAmAge for each sample.}
 #' \item{ageAcceleration}{A data frame with Age Acceleration Residuals for
 #'     each sample. NULL if `age` is not provided.}
+#'
+#' @examples
+#' clock_coefficients <- getClockCoefficients()
+#' example_dir <- system.file("extdata", package = "CellAgeR")
+#' load(file.path(example_dir, "Walker.Rdata"))
+#'
+#' res <- predictCTSAge(
+#'   betaMatrix = as.matrix(betaMat[, 1:3]),
+#'   clock = clock_coefficients$NeuronClock,
+#'   age = phenoDf$Age[1:3]
+#' )
+#'
+#' head(res$predictions)
+#' head(res$ageAcceleration)
 #'
 #' @importFrom stats lm residuals
 #' @export
