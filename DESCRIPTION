@@ -8,18 +8,24 @@ Description: Provides enhancer-enriched, cell-type-specific epigenetic clock
     models for estimating DNA methylation age from beta value matrices.
     Includes utilities to generate DNA methylation age predictions, compute
     age acceleration residuals when chronological age is available, and access
-    packaged example datasets and pre-trained clock coefficients for
-    reproducible analyses.
+    packaged example datasets, cell-type-specific DNA methylation signatures,
+    and pre-trained clock coefficients for reproducible analyses.
 License: MIT + file LICENSE
 Encoding: UTF-8
+LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Depends: 
     R (>= 3.5)
 Imports: 
+    glmnet,
+    limma,
+    matrixStats,
+    ranger,
     stats
 Suggests: 
     BiocStyle,
+    EpiDISH,
     knitr,
     rmarkdown,
     ggplot2,

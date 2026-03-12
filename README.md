@@ -1,6 +1,6 @@
 # CellAgeR
 
-CellAgeR provides enhancer-enriched, cell-type-specific epigenetic clocks for estimating DNA methylation age from beta value matrices. The package includes pre-trained clock coefficients, packaged example datasets, and utilities for computing both DNAm age and age acceleration.
+CellAgeR provides enhancer-enriched, cell-type-specific epigenetic clocks for estimating DNA methylation age from beta value matrices. The package includes pre-trained clock coefficients, packaged example datasets, cell-type-specific DNA methylation signatures, and utilities for computing both DNAm age and age acceleration.
 
 ## Installation
 
@@ -36,6 +36,19 @@ res <- predictCTSAge(
 head(res$predictions)
 head(res$ageAcceleration)
 ```
+
+## Workflow for Custom Clock Training
+
+In addition to packaged cell-type-specific clocks, `CellAgeR` also supports
+custom cell-type-specific clock training workflows. The package provides:
+
+- `cssSignatures` for selecting cell-type-specific candidate CpGs
+- `SWRF()` for prioritizing cell-type-specific phenotype-associated features
+- `trainWeightedClock()` for training a cell-type-specific clock based on
+  features selected by `SWRF()`
+
+A complete lung epithelial clock training workflow is available in the package
+vignette: `lung-workflow.html`.
 
 ## License
 

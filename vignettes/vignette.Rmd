@@ -200,6 +200,12 @@ ggplot(plot_df, aes(x = Group, y = AgeAccel, fill = Group)) +
   scale_fill_manual(values = c("Control" = "steelblue", "Huntington's disease" = "firebrick"))
 ```
 
+## See Also
+
+For a step-by-step training workflow that uses `EpiDISH`, `cssSignatures`,
+`SWRF()`, and `trainWeightedClock()` to build a lung epithelial clock, see
+[Lung Epithelial Clock Training](lung-workflow.html).
+
 ## Session Info
 
 ```{r sessionInfo}

@@ -1,0 +1,178 @@
+---
+title: "Lung Epithelial Clock Training"
+author: "Xiaolong Guo, Andrew E. Teschendorff"
+date: "`r Sys.Date()`"
+package: CellAgeR
+output:
+  BiocStyle::html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+vignette: >
+  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{Lung Epithelial Clock Training}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5,
+  fig.align = "center"
+)
+```
+
+## Overview
+
+This workflow shows a training pipeline for a lung epithelial
+clock. The workflow first estimates epithelial fractions with EpiDISH,
+then restricts the analysis to high cell type specificity score (CSS)
+lung epithelial markers, prioritizes lung epithelial specific age DMCs
+with Sliding Window Random Forest (SWRF), and finally trains a Lung Epithelial Clock.
+
+1.  Estimate epithelial fractions with `EpiDISH`.
+2.  Extract lung epithelial DMCs with `CSS > 0.4`.
+3.  Find lung epithelial specific age DMCs with `SWRF`.
+4.  Train a lung epithelial specific clock with `trainWeightedClock()`.
+
+## Setup
+
+```{r setup, message=FALSE, warning=FALSE}
+pkg_name <- "CellAgeR"
+
+if (!exists("SWRF", mode = "function")) {
+  library(pkg_name, character.only = TRUE)
+}
+
+library(EpiDISH)
+library(ggplot2)
+
+example_dir <- system.file("extdata", package = pkg_name)
+if (!nzchar(example_dir)) {
+  example_dir <- "inst/extdata"
+}
+```
+
+## Load Data
+
+The training file contains two objects: `lungMat`, a methylation matrix
+with CpGs in rows and samples in columns, and `ageVector`, a numeric
+vector of chronological ages aligned to the columns of `lungMat`. The
+workflow also loads `cssSignatures` and extracts lung epithelial CpGs
+with `CSS > 0.4` as the initial candidate feature set.
+
+```{r load-data}
+load(file.path(example_dir, "lungGSE175458.rda"))
+data("cssSignatures", package = pkg_name)
+lung_dmcs <- names(cssSignatures$lungEpi[cssSignatures$lungEpi > 0.4])
+```
+
+```{r load-data-prep, include=FALSE}
+lungMat <- lungMat / 10000
+```
+
+## Estimate Cell-Type Fractions with EpiDISH
+
+`centEpiFibIC.m` is a reference for estimating epithelial, fibroblast,
+and immune cell fractions.
+
+```{r epidish-fit, message=FALSE}
+cell_fractions <- as.data.frame(epidish(
+  beta.m = lungMat,
+  ref.m = centEpiFibIC.m,
+  method = "RPC"
+)$estF)
+fraction_df <- stack(cell_fractions)
+colnames(fraction_df) <- c("Fraction", "CellType")
+
+ggplot(fraction_df, aes(x = CellType, y = Fraction, fill = CellType)) +
+  geom_boxplot(alpha = 0.7, outlier.size = 0.3) +
+  theme_bw() +
+  labs(
+    x = NULL,
+    y = "Estimated fraction"
+  ) +
+  theme(legend.position = "none")
+```
+
+## Run SWRF to find Lung Epithelial specific Age DMCs
+
+```{r swrf-run}
+swrf_res <- SWRF(
+  targetCellType = "Epi",
+  candidateFeatures = lung_dmcs,
+  dataMatrix = lungMat,
+  cellFractions = cell_fractions,
+  responseVector = ageVector
+)
+candidate_data <- subset(swrf_res, Correlation > 0.1)
+head(candidate_data)
+```
+
+## Convert SCCs into Penalty Factors
+
+```{r penalties}
+penalties <- 1 / abs(candidate_data$Correlation)
+penalties <- penalties / mean(penalties)
+names(penalties) <- candidate_data$Feature
+```
+
+## Train a Lung Epithelial Specific Clock
+
+```{r train-clock}
+clock_fit <- trainWeightedClock(
+  dataMatrix = lungMat,
+  responseVector = ageVector,
+  candidateFeatures = candidate_data$Feature,
+  featureWeights = penalties
+)
+glmnet_fit <- clock_fit$cvModel
+head(clock_fit$clockCoefficients)
+```
+
+```{r lambda-plot}
+plot(glmnet_fit)
+```
+
+```{r validation}
+lambda_idx <- which.min(abs(glmnet_fit$lambda - glmnet_fit$lambda.min))
+y_cv_pred <- glmnet_fit$fit.preval[, lambda_idx]
+
+validation_df <- data.frame(
+  Actual_Age = ageVector,
+  Predicted_Age = y_cv_pred
+)
+
+ggplot(validation_df, aes(x = Actual_Age, y = Predicted_Age)) +
+  geom_point(alpha = 0.7, color = "steelblue") +
+  geom_smooth(method = "lm", se = FALSE, color = "firebrick") +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "grey50") +
+  theme_bw() +
+  labs(
+    title = "lung (n=201, GSE175458, Training set)",
+    x = "Actual age",
+    y = "Cross-validated predicted age"
+  )
+```
+
+## Extract Clock Coefficients
+
+The trained clock coefficients are returned directly by
+`trainWeightedClock()` and can be extracted from the fitted result for
+inspection or downstream prediction.
+
+```{r extract-coefficients}
+clock_coefficients <- clock_fit$clockCoefficients
+head(clock_coefficients)
+```
+
+## Session Info
+
+```{r sessionInfo}
+sessionInfo()
+```
