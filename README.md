@@ -47,6 +47,7 @@ custom cell-type-specific clock training workflows. The package provides:
 - `trainWeightedClock()` for training a cell-type-specific clock based on
   features selected by `SWRF()`
 - `cssSignatures` containing cell-type-specific DMCs of 8 cell types
+
 A complete lung epithelial clock training workflow is available in the package
 vignette: `lung-workflow.html`.
 
