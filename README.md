@@ -15,7 +15,7 @@ For local development from a source checkout:
 
 ```r
 install.packages("devtools")
-devtools::install(".", build_vignettes = TRUE)
+devtools::install("tednb/CellAgeR", build_vignettes = TRUE)
 ```
 
 ## Quick Start
