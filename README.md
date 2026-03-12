@@ -42,11 +42,11 @@ head(res$ageAcceleration)
 In addition to packaged cell-type-specific clocks, `CellAgeR` also supports
 custom cell-type-specific clock training workflows. The package provides:
 
-- `cssSignatures` for selecting cell-type-specific candidate CpGs
+- `calculateCSS()` for calculating cell type specificity scores (CSS)
 - `SWRF()` for prioritizing cell-type-specific phenotype-associated features
 - `trainWeightedClock()` for training a cell-type-specific clock based on
   features selected by `SWRF()`
-
+- `cssSignatures` containing cell-type-specific DMCs of 8 cell types
 A complete lung epithelial clock training workflow is available in the package
 vignette: `lung-workflow.html`.
 
