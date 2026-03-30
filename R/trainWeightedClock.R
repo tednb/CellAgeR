@@ -15,6 +15,10 @@
 #'     (less shrinkage). If NULL, defaults to unweighted (all 1s).
 #' @param alpha The elastic net mixing parameter. Defaults to 0.5.
 #' @param nfolds Number of folds for cross-validation. Defaults to 10.
+#' @param lambda.min.ratio Smallest value for lambda, as a fraction of lambda.max. 
+#'     Useful for extending the lambda sequence if the minimum is hitting the edge. Defaults to NULL.
+#' @param lambda_choice Character string specifying which lambda value to use 
+#'     for extracting coefficients. Typically "lambda.min" or "lambda.1se". Defaults to "lambda.min".
 #' @param seed Integer for random seed to ensure reproducible CV folds. 
 #'     Defaults to 42.
 #'
@@ -47,7 +51,8 @@
 #' @export
 trainWeightedClock <- function(dataMatrix, responseVector, candidateFeatures,
                                featureWeights = NULL, alpha = 0.5,
-                               nfolds = 10, seed = 42) {
+                               nfolds = 10, lambda.min.ratio = NULL, lambda_choice = "lambda.min",
+                               seed = 42) {
   if (!is.matrix(dataMatrix) || !is.numeric(dataMatrix)) {
     stop("dataMatrix must be a numeric matrix.")
   }
@@ -99,7 +104,7 @@ trainWeightedClock <- function(dataMatrix, responseVector, candidateFeatures,
 
   message("Step 3: Training Weighted Elastic Net model via cv.glmnet...")
   set.seed(seed)
-  cvFit <- glmnet::cv.glmnet(
+  cvArgs <- list(
     x = xTrain,
     y = yTrain,
     family = "gaussian",
@@ -109,10 +114,14 @@ trainWeightedClock <- function(dataMatrix, responseVector, candidateFeatures,
     keep = TRUE,
     penalty.factor = penalties
   )
+  if (!is.null(lambda.min.ratio)) {
+    cvArgs$lambda.min.ratio <- lambda.min.ratio
+  }
+  cvFit <- do.call(glmnet::cv.glmnet, cvArgs)
 
   message("Step 4: Extracting optimal model coefficients...")
-  bestLambda <- cvFit$lambda.min
-  coefMatrix <- as.matrix(stats::coef(cvFit, s = "lambda.min"))
+  bestLambda <- cvFit[[lambda_choice]]
+  coefMatrix <- as.matrix(stats::coef(cvFit, s = lambda_choice))
   keepIdx <- which(coefMatrix[, 1] != 0)
 
   clockDf <- data.frame(

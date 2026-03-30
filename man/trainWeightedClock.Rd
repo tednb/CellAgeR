@@ -11,6 +11,8 @@ trainWeightedClock(
   featureWeights = NULL,
   alpha = 0.5,
   nfolds = 10,
+  lambda.min.ratio = NULL,
+  lambda_choice = "lambda.min",
   seed = 42
 )
 }
@@ -32,6 +34,12 @@ glmnet, meaning a LOWER value indicates a MORE important feature
 \item{alpha}{The elastic net mixing parameter. Defaults to 0.5.}
 
 \item{nfolds}{Number of folds for cross-validation. Defaults to 10.}
+
+\item{lambda.min.ratio}{Smallest value for lambda, as a fraction of lambda.max.
+Useful for extending the lambda sequence if the minimum is hitting the edge. Defaults to NULL.}
+
+\item{lambda_choice}{Character string specifying which lambda value to use
+for extracting coefficients. Typically "lambda.min" or "lambda.1se". Defaults to "lambda.min".}
 
 \item{seed}{Integer for random seed to ensure reproducible CV folds.
 Defaults to 42.}
