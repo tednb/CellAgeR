@@ -28,7 +28,12 @@ knitr::opts_chunk$set(
 
 The `CellAgeR` package provides a suite of enhancer-enriched, cell-type specific DNAm clocks. Biological aging often manifests differently across distinct cell types, yet standard bulk-tissue clocks can be confounded by changes in cellular heterogeneity.
 
-By focusing on DNA methylation patterns at enhancer-enriched cell-type specific regions, `CellAgeR` enables quantification of biological age for: - **Brain**: Neurons and Oligodendrocytes - **Epithelial cells**: Skin Keratinocytes, Colon, and Lung - **Liver**: Hepatocytes (HepClockV2) - **Immune cells**: CD4+ T cells and Monocytes
+By focusing on DNA methylation patterns at enhancer-enriched cell-type specific regions, `CellAgeR` enables quantification of biological age for: 
+- **Brain**: Neurons and Oligodendrocytes (and sorted versions)
+- **Epithelial cells**: Skin Keratinocytes, Colon, Lung, and Saliva
+- **Liver**: Hepatocytes
+- **Immune cells**: CD4+ T cells, Monocytes, Colon, Lung, and Saliva Immune cells
+- **Fibroblasts**: Lung and Colon Fibroblasts
 
 This vignette demonstrates how to use the core functions to predict epigenetic age and perform downstream analysis using example datasets.
 

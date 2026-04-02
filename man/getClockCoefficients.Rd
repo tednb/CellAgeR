@@ -13,9 +13,10 @@ coefficients for one clock model.
 \description{
 Returns the packaged list of pre-trained cell-type specific
 clock coefficient tables included with CellAgeR. Available clock names
-are \code{NeuronClock}, \code{OligoClock}, \code{sortedNeuronClock},
-\code{sortedOligoClock}, \code{Cd4tClock}, \code{MonoClock}, \code{ColonEpiClock},
-\code{KeraClock}, \code{LungEpiClock}, and \code{HepClock}.
+are \code{NeuronClock}, \code{ColonImmunClock}, \code{Cd4tClock}, \code{sortedOligoClock},
+\code{ColonEpiClock}, \code{sortedNeuronClock}, \code{LungFibClock}, \code{KeraClock},
+\code{salivaImmunClock}, \code{LungEpiClock}, \code{salivaEpiClock}, \code{MonoClock},
+\code{HepClock}, \code{ColonFibClock}, \code{OligoClock}, and \code{LungImmunClock}.
 }
 \examples{
 names(getClockCoefficients())
