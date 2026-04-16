@@ -30,10 +30,10 @@ The `CellAgeR` package provides a suite of enhancer-enriched, cell-type specific
 
 By focusing on DNA methylation patterns at enhancer-enriched cell-type specific regions, `CellAgeR` enables quantification of biological age for: 
 - **Brain**: Neurons and Oligodendrocytes (and sorted versions)
-- **Epithelial cells**: Skin Keratinocytes, Colon, Lung, and Saliva
+- **Epithelial cells**: Skin Keratinocytes, Colon, Lung, Saliva, Prostate, and Breast
 - **Liver**: Hepatocytes
 - **Immune cells**: CD4+ T cells, Monocytes, Colon, Lung, and Saliva Immune cells
-- **Fibroblasts**: Lung and Colon Fibroblasts
+- **Fibroblasts**: Lung, Colon, and Breast Fibroblasts
 
 This vignette demonstrates how to use the core functions to predict epigenetic age and perform downstream analysis using example datasets.
 

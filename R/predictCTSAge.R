@@ -3,10 +3,11 @@
 #'     methylation beta matrix and a clock model. Optionally, if chronological
 #'     age is provided, it calculates age acceleration residuals. When using
 #'     packaged models from `getClockCoefficients()`, available clock names are
-#'     `NeuronClock`, `ColonImmunClock`, `Cd4tClock`, `sortedOligoClock`,
-#'     `ColonEpiClock`, `sortedNeuronClock`, `LungFibClock`, `KeraClock`,
-#'     `salivaImmunClock`, `LungEpiClock`, `salivaEpiClock`, `MonoClock`,
-#'     `HepClock`, `ColonFibClock`, `OligoClock`, and `LungImmunClock`.
+#'     `ProstateEpiClock`, `NeuronClock`, `ColonImmunClock`, `Cd4tClock`,
+#'     `sortedOligoClock`, `ColonEpiClock`, `sortedNeuronClock`, `LungFibClock`,
+#'     `KeraClock`, `BreastFibClock`, `salivaImmunClock`, `LungEpiClock`,
+#'     `BreastEpiClock`, `salivaEpiClock`, `MonoClock`, `HepClock`,
+#'     `ColonFibClock`, `OligoClock`, and `LungImmunClock`.
 #'
 #' @param betaMatrix A numeric matrix of beta values, with 
 #'     CpGs in rows and samples in columns.
@@ -14,10 +15,11 @@
 #'     contain 'Feature' and 'Coefficient' columns. The intercept should be
 #'     indicated by '(Intercept)' in the 'Feature' column. If you use packaged
 #'     models from `getClockCoefficients()`, valid clock names are
-#'     `NeuronClock`, `ColonImmunClock`, `Cd4tClock`, `sortedOligoClock`,
-#'     `ColonEpiClock`, `sortedNeuronClock`, `LungFibClock`, `KeraClock`,
-#'     `salivaImmunClock`, `LungEpiClock`, `salivaEpiClock`, `MonoClock`,
-#'     `HepClock`, `ColonFibClock`, `OligoClock`, and `LungImmunClock`. For example, use
+#'     `ProstateEpiClock`, `NeuronClock`, `ColonImmunClock`, `Cd4tClock`,
+#'     `sortedOligoClock`, `ColonEpiClock`, `sortedNeuronClock`, `LungFibClock`,
+#'     `KeraClock`, `BreastFibClock`, `salivaImmunClock`, `LungEpiClock`,
+#'     `BreastEpiClock`, `salivaEpiClock`, `MonoClock`, `HepClock`,
+#'     `ColonFibClock`, `OligoClock`, and `LungImmunClock`. For example, use
 #'     `clock = getClockCoefficients()$NeuronClock`.
 #' @param age A numeric vector of chronological ages for the samples. The
 #'     order must correspond to the sample order in `betaMatrix`. Defaults

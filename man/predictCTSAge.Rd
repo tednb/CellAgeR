@@ -14,10 +14,11 @@ CpGs in rows and samples in columns.}
 contain 'Feature' and 'Coefficient' columns. The intercept should be
 indicated by '(Intercept)' in the 'Feature' column. If you use packaged
 models from \code{getClockCoefficients()}, valid clock names are
-\code{NeuronClock}, \code{ColonImmunClock}, \code{Cd4tClock}, \code{sortedOligoClock},
-\code{ColonEpiClock}, \code{sortedNeuronClock}, \code{LungFibClock}, \code{KeraClock},
-\code{salivaImmunClock}, \code{LungEpiClock}, \code{salivaEpiClock}, \code{MonoClock},
-\code{HepClock}, \code{ColonFibClock}, \code{OligoClock}, and \code{LungImmunClock}. For example, use
+\code{ProstateEpiClock}, \code{NeuronClock}, \code{ColonImmunClock}, \code{Cd4tClock},
+\code{sortedOligoClock}, \code{ColonEpiClock}, \code{sortedNeuronClock}, \code{LungFibClock},
+\code{KeraClock}, \code{BreastFibClock}, \code{salivaImmunClock}, \code{LungEpiClock},
+\code{BreastEpiClock}, \code{salivaEpiClock}, \code{MonoClock}, \code{HepClock},
+\code{ColonFibClock}, \code{OligoClock}, and \code{LungImmunClock}. For example, use
 \code{clock = getClockCoefficients()$NeuronClock}.}
 
 \item{age}{A numeric vector of chronological ages for the samples. The
@@ -35,10 +36,11 @@ This function predicts epigenetic age based on a given DNA
 methylation beta matrix and a clock model. Optionally, if chronological
 age is provided, it calculates age acceleration residuals. When using
 packaged models from \code{getClockCoefficients()}, available clock names are
-\code{NeuronClock}, \code{ColonImmunClock}, \code{Cd4tClock}, \code{sortedOligoClock},
-\code{ColonEpiClock}, \code{sortedNeuronClock}, \code{LungFibClock}, \code{KeraClock},
-\code{salivaImmunClock}, \code{LungEpiClock}, \code{salivaEpiClock}, \code{MonoClock},
-\code{HepClock}, \code{ColonFibClock}, \code{OligoClock}, and \code{LungImmunClock}.
+\code{ProstateEpiClock}, \code{NeuronClock}, \code{ColonImmunClock}, \code{Cd4tClock},
+\code{sortedOligoClock}, \code{ColonEpiClock}, \code{sortedNeuronClock}, \code{LungFibClock},
+\code{KeraClock}, \code{BreastFibClock}, \code{salivaImmunClock}, \code{LungEpiClock},
+\code{BreastEpiClock}, \code{salivaEpiClock}, \code{MonoClock}, \code{HepClock},
+\code{ColonFibClock}, \code{OligoClock}, and \code{LungImmunClock}.
 }
 \examples{
 clock_coefficients <- getClockCoefficients()
