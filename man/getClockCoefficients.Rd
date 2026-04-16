@@ -13,11 +13,12 @@ coefficients for one clock model.
 \description{
 Returns the packaged list of pre-trained cell-type specific
 clock coefficient tables included with CellAgeR. Available clock names
-are \code{ProstateEpiClock}, \code{NeuronClock}, \code{ColonImmunClock}, \code{Cd4tClock},
-\code{sortedOligoClock}, \code{ColonEpiClock}, \code{sortedNeuronClock}, \code{LungFibClock},
-\code{KeraClock}, \code{BreastFibClock}, \code{salivaImmunClock}, \code{LungEpiClock},
-\code{BreastEpiClock}, \code{salivaEpiClock}, \code{MonoClock}, \code{HepClock},
-\code{ColonFibClock}, \code{OligoClock}, and \code{LungImmunClock}.
+are conceptually structured by tissue and cell type:
+Brain (\code{NeuronClock}, \code{sortedNeuronClock}, \code{OligoClock}, \code{sortedOligoClock});
+Epithelial (\code{BreastEpiClock}, \code{ColonEpiClock}, \code{KeraClock}, \code{LungEpiClock},
+\code{ProstateEpiClock}, \code{salivaEpiClock}); Fibroblast (\code{BreastFibClock},
+\code{ColonFibClock}, \code{LungFibClock}); Immune (\code{Cd4tClock}, \code{ColonImmunClock},
+\code{LungImmunClock}, \code{MonoClock}, \code{salivaImmunClock}); and Liver (\code{HepClock}).
 }
 \examples{
 names(getClockCoefficients())

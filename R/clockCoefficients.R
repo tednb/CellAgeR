@@ -1,11 +1,12 @@
 #' @title Access Packaged Clock Coefficients
 #' @description Returns the packaged list of pre-trained cell-type specific
 #'     clock coefficient tables included with CellAgeR. Available clock names
-#'     are `ProstateEpiClock`, `NeuronClock`, `ColonImmunClock`, `Cd4tClock`,
-#'     `sortedOligoClock`, `ColonEpiClock`, `sortedNeuronClock`, `LungFibClock`,
-#'     `KeraClock`, `BreastFibClock`, `salivaImmunClock`, `LungEpiClock`,
-#'     `BreastEpiClock`, `salivaEpiClock`, `MonoClock`, `HepClock`,
-#'     `ColonFibClock`, `OligoClock`, and `LungImmunClock`.
+#'     are conceptually structured by tissue and cell type:
+#'     Brain (`NeuronClock`, `sortedNeuronClock`, `OligoClock`, `sortedOligoClock`);
+#'     Epithelial (`BreastEpiClock`, `ColonEpiClock`, `KeraClock`, `LungEpiClock`,
+#'     `ProstateEpiClock`, `salivaEpiClock`); Fibroblast (`BreastFibClock`,
+#'     `ColonFibClock`, `LungFibClock`); Immune (`Cd4tClock`, `ColonImmunClock`,
+#'     `LungImmunClock`, `MonoClock`, `salivaImmunClock`); and Liver (`HepClock`).
 #'
 #' @return A named list of data frames. Each data frame contains the
 #'     coefficients for one clock model.
